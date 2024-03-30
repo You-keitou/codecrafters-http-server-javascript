@@ -13,7 +13,7 @@ HttpHeader.prototype.parse = function (buf) {
     } else {
       const property = bufSplit[i].split(": ");
       if (property[1]) {
-        this[`${property[0]}`] = property[1].split(",");
+        this[`${property[0]}`] = property[1];
       }
     }
   }

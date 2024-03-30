@@ -19,15 +19,20 @@ const server = net.createServer((socket) => {
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${httpHeader["User-Agent"].length}\r\n\r\n${httpHeader["User-Agent"]}\r\n`
       );
     } else if (httpHeader.path.match(new RegExp("/files"))) {
+      const filePath = `${process.argv[3]}/${httpHeader.path.substring(7)}`;
+      let filehandle;
       try {
-        const filePath = `${process.argv[3]}/${httpHeader.path.substring(7)}`;
-        const file = await open(filePath);
-        const fileContent = file.readFile();
+        filehandle = await open(filePath, "r");
+        const fileContent = await filehandle.readFile({
+          encoding: "utf8",
+        });
         socket.write(
           `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileContent.length}\r\n\r\n${fileContent}\r\n`
         );
-      } catch (e) {
+      } catch {
         socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+      } finally {
+        filehandle?.close();
       }
     } else socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
     socket.end();

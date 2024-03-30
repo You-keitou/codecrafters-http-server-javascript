@@ -9,9 +9,9 @@ const server = net.createServer((socket) => {
     const httpHeader = new HttpHeader(req.toString());
     if (httpHeader.path === "/") socket.write("HTTP/1.1 200 OK\r\n\r\n");
     else if (httpHeader.path.match(new RegExp("echo"))) {
-      const content = httpHeader.path.split("/")[1];
+      const content = httpHeader.path.substring(6);
       socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n${content}\r\n`
+        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${content.length}\r\n\r\n${content}\r\n`
       );
     } else socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
     socket.end();
